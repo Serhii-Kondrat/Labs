@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+    <form class="grid" action="/result" method="POST">
+        <label for="num1">Введіть перше число:</label>
+        <input type="text" id="num1" name="num1">
+        <br>
+        <label for="num2">Введіть друге число:</label>
+        <input type="text" id="num2" name="num2">
+        <br>
+        <label for="operation">Виберіть операцію:</label>
+        <select id="operation" name="operation">
+            <option value="add">Додавання</option>
+            <option value="subtract">+</option>
+            <option value="multiply">Додати</option>
+            <option value="divide">Додати числа</option>
+        </select>
+        <br>
+        <label for="use_checkbox">Використати чекбокс:</label>
+        <input type="checkbox" id="use_checkbox" name="use_checkbox">
+        <br>
+        <input class="file_submit" type="Submit" value="Відправити">
+
+    </form>
+
+    <center>
+        <h3 style="color: blue;" class="let_space">Лічильник форм: {{ count }}</h3>
+    </center>
+
+    {% if result is defined %}
+    <center>
+        <h3 style="color: blue;" class="let_space">Результат: {{ result }}</h3>
+    </center>
+    {% endif %}
+
+    <a href="/delete_cookies">Видалити Cookies</a>
+</body>
+</html>
