@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %} Мій профіль {% endblock %}
+
+{% block body %}
+{{ super() }}
+
+<div class="content">
+    <h1>Мій профіль</h1>
+    <p>Логін: {{ session.username }}</p>
+    <!-- Тут можна вивести інші дані користувача, якщо вони доступні -->
+</div>
+</div>
+
+{% endblock %}
+
+
