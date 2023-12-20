@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+
+{% block body %}
+     <h1>Дисципліни</h1>
+    <form method="POST" action="{{ url_for('independent') }}">
+        <label for="title">Title:</label><br>
+        <input type="text" id="title" name="title"><br><br>
+        
+        <label for="content">Content:</label><br>
+        <textarea id="content" name="content"></textarea><br><br>
+
+        <input type="hidden" name="user_id" value="{{ user_id }}"> <!-- Set user_id outside the loop -->
+        <input type="submit" name="action" value="create">
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Content</th>
+                <th>Username</th> <!-- Новий стовпчик -->
+                <th>Options</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for post in posts %}
+                <tr>
+                    <form method="POST" action="{{ url_for('independent') }}">
+                        <td>
+                            <input type="text" name="id" value="{{ post.id }}" disabled>
+                            <input type="hidden" name="post_id" value="{{ post.id }}">
+                        </td>
+                        <td><input type="text" name="title" value="{{ post.title }}"></td>
+                        <td><textarea name="content">{{ post.content }}</textarea></td>
+                      
+                        <td>{{ username }}</td> <!-- Відображення імені користувача -->
+                        <td>
+                            <input type="submit" name="action" value="update">
+                            <input type="submit" name="action" value="delete" onclick="confirmDelete('{{ post.id }}')">
+                        </td>
+                      
+                    </form>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <script>
+        // Функція, яка відкриває спливаюче вікно на підтвердження видалення
+        function confirmDelete(postId) {
+            var result = confirm("Ви впевнені, що хочете видалити цей пост?");
+            if (result) {
+                // Якщо користувач підтвердив видалення, відправте форму для видалення поста
+                var form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/delete-post'; // Замініть '/delete-post' на URL для обробки видалення поста
+
+                var hiddenField = document.createElement('input');
+                hiddenField.type = 'hidden';
+                hiddenField.name = 'post_id';
+                hiddenField.value = postId;
+
+                form.appendChild(hiddenField);
+                document.body.appendChild(form);
+                form.submit();
+            } else {
+                // Скасування дії видалення
+                return false;
+            }
+        }
+    </script>
+    <style>
+        /* Оновлений стиль для таблиці */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #dddddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        /* Стилі для кнопок */
+        input[type="submit"] {
+            padding: 6px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        /* Кольори для кнопок */
+        input[type="submit"][name="action"][value="create"] {
+            background-color: #4caf50; /* Зелений колір для кнопки створення */
+            color: white;
+        }
+
+        input[type="submit"][name="action"][value="update"] {
+            background-color: #008CBA; /* Синій колір для кнопки оновлення */
+            color: white;
+        }
+
+        input[type="submit"][name="action"][value="delete"] {
+            background-color: #f44336; /* Червоний колір для кнопки видалення */
+            color: white;
+        }
+
+        /* Оновлений стиль для текстових полів */
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 6px 10px;
+            margin: 6px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+    </style>
+{% endblock %}
