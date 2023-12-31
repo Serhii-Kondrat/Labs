@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+
+{% block body %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Posts</title>
+    <style>
+      
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #dddddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+       
+        input[type="submit"] {
+            padding: 6px 10px;
+            border: none;
+            border-radius: 20px; 
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+     
+    
+
+       
+
+       
+
+     
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 6px 10px;
+            margin: 6px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+    
+
+    </style>
+
+    
+</head>
+<body>
+    <h1>Дисципліни</h1>
+
+    <table id="posts-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Content</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+           
+        </tbody>
+    </table>
+
+    <button class="btn" onclick="refreshPosts()">Refresh</button>
+    <button class="btn" onclick="showAddForm()">Add New</button>
+
+    <script>
+        function refreshPosts() {
+            fetch('/api/independent')
+                .then(response => response.json())
+                .then(posts => {
+                    const tableBody = document.querySelector('#posts-table tbody');
+                    tableBody.innerHTML = '';
+                    posts.forEach(post => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${post.id}</td>
+                            <td>${post.title}</td>
+                            <td>${post.content}</td>
+                            <td>
+                                <button class="btn" onclick="updatePost(${post.id}, '${post.title}', '${post.content}')">Update</button>
+                                <button class="btn" onclick="deletePost(${post.id})">Delete</button>
+                            </td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                });
+        }
+
+        function showAddForm() {
+            const newTitle = prompt('Enter the title for the new post:');
+            const newContent = prompt('Enter the content for the new post:');
+            if (newTitle !== null && newContent !== null) {
+                fetch('/api/independent', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        title: newTitle,
+                        content: newContent
+                    })
+                })
+                .then(response => {
+                    if (response.ok) {
+                        refreshPosts();
+                    } else {
+                        alert('Failed to add the post');
+                    }
+                });
+            }
+        }
+
+        function updatePost(postId, currentTitle, currentContent) {
+            const newTitle = prompt('Enter new title:', currentTitle);
+            const newContent = prompt('Enter new content:', currentContent);
+            if (newTitle !== null && newContent !== null) {
+                fetch(`/api/independent/${postId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        title: newTitle,
+                        content: newContent
+                    })
+                })
+                .then(response => {
+                    if (response.ok) {
+                        refreshPosts();
+                    } else {
+                        alert('Failed to update the post');
+                    }
+                });
+            }
+        }
+
+        function deletePost(postId) {
+            fetch(`/api/independent/${postId}`, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (response.ok) {
+                    refreshPosts();
+                } else {
+                    alert('Failed to delete the post');
+                }
+            });
+        }
+
+     
+        refreshPosts();
+    </script>
+</body>
+</html>
+{% endblock %}
