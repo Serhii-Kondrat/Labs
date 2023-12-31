@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Список завдань</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        form {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        #addTodoForm input[type="text"], #addTodoForm button {
+            padding: 8px;
+            margin: 5px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        #todoList {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        #todoList li {
+            background-color: #fff;
+            padding: 10px;
+            margin-bottom: 5px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            display: flex;
+            align-items: center;
+        }
+
+        #todoList li input[type="text"] {
+            flex: 1;
+            margin-right: 10px;
+        }
+
+        #todoList li button {
+            padding: 6px 10px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+        }
+
+        #todoList li button:nth-child(2) {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        #todoList li button:nth-child(3) {
+            background-color: #f44336;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>Список завдань</h1>
+
+  
+    <form id="addTodoForm">
+        <input type="text" id="taskInput" placeholder="Назва завдання">
+        <input type="text" id="statusInput" placeholder="Статус">
+        <button type="submit">Додати завдання</button>
+    </form>
+
+
+    <ul id="todoList">
+    
+        <li id="todo-1">
+            Завдання ID: 1 - Приклад завдання (Статус: В процесі)
+            <input type="text" id="updateTaskInput-1" placeholder="Нова назва завдання">
+            <button onclick="updateTodo(1)">Оновити</button>
+            <button onclick="deleteTodo(1)">Видалити</button>
+        </li>
+        <li id="todo-2">
+            Завдання ID: 2 - Інше завдання (Статус: Виконано)
+            <input type="text" id="updateTaskInput-2" placeholder="Нова назва завдання">
+            <button onclick="updateTodo(2)">Оновити</button>
+            <button onclick="deleteTodo(2)">Видалити</button>
+        </li>
+    </ul>
+
+    <script>
+
+        function deleteTodo(todoId) {
+            fetch(`/api/todos/${todoId}`, {
+                method: 'DELETE',
+            })
+            .then(response => response.json())
+            .then(data => {
+                const todoToRemove = document.getElementById(`todo-${todoId}`);
+                if (todoToRemove) {
+                    todoToRemove.remove();
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+      
+        function updateTodo(todoId) {
+            const newTask = document.getElementById(`updateTaskInput-${todoId}`).value;
+
+            fetch(`/api/todos/${todoId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    task: newTask,
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                fetchTodoList(); 
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        // Функція для завантаження списку завдань
+        function fetchTodoList() {
+            fetch('/api/todos')
+            .then(response => response.json())
+            .then(data => {
+                const todoList = document.getElementById('todoList');
+                todoList.innerHTML = ''; // Очистити попередні елементи списку
+
+                // Оновлення списку завдань
+                data.forEach(todo => {
+                    const li = document.createElement('li');
+                    li.id = `todo-${todo.id}`;
+                    li.textContent = `Завдання ID: ${todo.id} - ${todo.task} (Статус: ${todo.status})`;
+
+                    const updateInput = document.createElement('input');
+                    updateInput.type = 'text';
+                    updateInput.id = `updateTaskInput-${todo.id}`;
+                    updateInput.placeholder = 'Нова назва завдання';
+
+                    const updateButton = document.createElement('button');
+                    updateButton.textContent = 'Оновити';
+                    updateButton.onclick = () => updateTodo(todo.id);
+
+                    const deleteButton = document.createElement('button');
+                    deleteButton.textContent = 'Видалити';
+                    deleteButton.onclick = () => deleteTodo(todo.id);
+
+                    li.appendChild(updateInput);
+                    li.appendChild(updateButton);
+                    li.appendChild(deleteButton);
+                    todoList.appendChild(li);
+                });
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        // Додати обробник події для форми додавання завдання
+        document.getElementById('addTodoForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const task = document.getElementById('taskInput').value;
+            const status = document.getElementById('statusInput').value;
+
+            fetch('/api/todos', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    task: task,
+                    status: status
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Перезавантаження списку завдань після додавання
+                fetchTodoList();
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+        // Початкове завантаження списку завдань при завантаженні сторінки
+        fetchTodoList();
+    </script>
+</body>
+</html>
