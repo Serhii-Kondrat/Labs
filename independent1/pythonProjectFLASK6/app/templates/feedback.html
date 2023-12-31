@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<h1>Форма відгуку</h1>
+<form method="POST">
+    {{ feedback_form.hidden_tag() }}
+    <p>{{ feedback_form.feedback.label }}<br>
+        {{ feedback_form.feedback(size=40) }}<br>
+        {% for error in feedback_form.feedback.errors %}
+            <span style="color: red;">{{ error }}</span><br>
+        {% endfor %}
+    </p>
+    <p>{{ feedback_form.submit() }}</p>
+</form>
+
+<h1>Залишені відгуки</h1>
+{% for feedback in feedbacks %}
+    <p>{{ feedback.text }}</p>
+{% endfor %}
+
+{% endblock %}
