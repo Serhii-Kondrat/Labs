@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %} Home {% endblock %}
+
+{% block body %}
+{{ super() }}
+
+<div class="content">
+    
+    <div class="text">
+        <h1>Головна сторінка</h1>
+        <p>Ласкаво просимо на головну сторінку!</p>
+        <p>Тут ви знайдете багато корисної і цікавої інформації.</p>
+        <p>Я стараюся, щоб зробити ваше перебування на нашому сайті комфортним.</p>
+        <p>Я завжди вдячний за вашу підтримку та активну участь.</p>
+        <p>Переглядайте матеріали.</p>
+    
+    </div>
+
+    <div class="image">
+        <img class="rounded" width="350" src="{{ url_for('static', filename='images/15.jpg') }}">
+    </div>
+    
+</div>
+<div id="footer">
+    <p>Operating System and User Agent: {{ user_agent }}</p>
+    
+    <p>Час: {{ time }}</p>
+</div>
+
+
+
+
+<style>
+    
+    .content {
+        background-color: #f2f2f2; 
+        display: flex;
+        
+    justify-content: center;
+    align-items: center;
+    line-height: 1;
+    }
+    
+   
+</style>
+{% endblock %}

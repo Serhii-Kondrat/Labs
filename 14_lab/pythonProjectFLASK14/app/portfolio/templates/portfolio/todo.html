@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% block title %}Todo{% endblock %}
+{% block content %}
+  <div class="container py-5 h-100">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="col col-lg-9 col-xl-7">
+        <div class="card rounded-3">
+          <div class="card-body p-4">
+
+            <h3 class="text-center my-3 pb-3">Your To Do list</h3>
+            <br>
+            <form class="row" action="{{ url_for('todo.add') }}" method="POST">
+              {{ form.hidden_tag() }}
+              <div class="col-5">
+                <div class="form-outline">
+                  {{ form.title(class="form-control", placeholder="Enter a task here") }}
+                </div>
+              </div>
+              <div class="col-5">
+                <div class="form-outline">
+                  {{ form.description(class="form-control", placeholder="Enter description here") }}
+                </div>
+              </div>
+              <div class="col-2">
+                {{ form.submit(class="btn btn-primary") }}
+              </div>
+            </form>
+
+            <br><br>
+            
+            <table class="table mb-4">
+              <thead>
+                  <tr>
+                    <th scope="col">No.</th>
+                    <th scope="col">Title</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Actions</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  {% for todo in todo_list %}
+                  <tr class="table-white">
+                    <th scope="row">{{ todo.id }}</th>
+                    <td>{{ todo.title }}</td>
+                    <td>{{ todo.description }}</td>
+                    <td>
+                      <ul class="list-group">
+                        {% if todo.complete == False %}
+                          <li class="list-group-item list-group-item-dark">In progress</li>
+                        {% else %}
+                          <li class="list-group-item list-group-item-success completed">Completed</li>
+                        {% endif %}
+                      </ul>
+                    </td>
+                    <td>
+                      <a class="btn btn-success" href="{{ url_for('todo.update', id=todo.id) }}">Update</a>
+                      <a class="btn btn-danger ms-1" href="{{ url_for('todo.delete', id=todo.id) }}">Delete</a>
+                    </td>
+                  </tr>
+                  {% endfor %}
+              </tbody>
+          </table>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
